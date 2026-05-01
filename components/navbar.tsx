@@ -19,7 +19,7 @@ export default function Navbar() {
         
         <div className="hidden md:flex items-center gap-6">
           <div className="flex items-center gap-4 px-4 py-1.5 bg-zinc-900 border border-zinc-800 rounded-full">
-            <Link href="/" className="text-[11px] font-bold uppercase tracking-wider text-zinc-100 hover:text-indigo-400 transition-colors">Stories</Link>
+            <Link href="/" className="text-[11px] font-bold uppercase tracking-wider text-zinc-100 hover:text-indigo-400 transition-colors">Home</Link>
             <div className="w-1 h-1 rounded-full bg-zinc-700" />
             <Link href="/about" className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 hover:text-zinc-300 transition-colors">About</Link>
             <div className="w-1 h-1 rounded-full bg-zinc-700" />
