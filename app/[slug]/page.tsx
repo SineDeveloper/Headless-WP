@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 export default async function StaticPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const page = await getPageBySlug(slug);
+  const page: any = await getPageBySlug(slug);
 
   if (!page) {
     return (
@@ -18,29 +18,33 @@ export default async function StaticPage({ params }: { params: Promise<{ slug: s
     );
   }
 
-  const acf = page?.acf;
-  const accentColor = acf?.accent_color || '#6366f1'; // Default to indigo-500
+  if (page?._scf_missing) {
+    console.warn(`UI WARNING: SCF metadata missing for slug: ${slug}. Rendering content only.`);
+  }
+
+  const scf = page?.scf;
+  const accentColor = scf?.accent_color || '#6366f1'; // Default to indigo-500
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100" style={{ '--accent': accentColor } as any}>
       <Navbar />
       
-      <main className={`relative py-20 ${acf?.hero_full_width ? '' : 'max-w-5xl mx-auto px-6'}`}>
+      <main className={`relative py-20 ${scf?.hero_full_width ? '' : 'max-w-5xl mx-auto px-6'}`}>
         {/* Background Ambient Glow */}
         <div 
           className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] blur-[120px] rounded-full pointer-events-none opacity-20"
           style={{ backgroundColor: 'var(--accent)' }}
         />
 
-        <header className={`mb-20 relative z-10 text-center ${acf?.hero_full_width ? 'max-w-5xl mx-auto px-6' : ''}`}>
+        <header className={`mb-20 relative z-10 text-center ${scf?.hero_full_width ? 'max-w-5xl mx-auto px-6' : ''}`}>
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full mb-8">
             <Info className="w-3 h-3" style={{ color: 'var(--accent)' }} />
             <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Documentation / Page</span>
           </div>
 
-          {acf?.subtitle && (
+          {scf?.subtitle && (
             <div className="font-mono text-[11px] uppercase tracking-[0.5em] text-zinc-500 mb-4 block">
-              {acf.subtitle}
+              {scf.subtitle}
             </div>
           )}
           
@@ -49,7 +53,7 @@ export default async function StaticPage({ params }: { params: Promise<{ slug: s
           </h1>
 
           {page.featuredImage?.node?.sourceUrl && (
-            <div className={`relative aspect-[21/9] w-full mb-20 overflow-hidden shadow-2xl border-y border-zinc-800 ${acf?.hero_full_width ? 'rounded-none' : 'rounded-3xl border-x'}`}>
+            <div className={`relative aspect-[21/9] w-full mb-20 overflow-hidden shadow-2xl border-y border-zinc-800 ${scf?.hero_full_width ? 'rounded-none' : 'rounded-3xl border-x'}`}>
               <Image
                 src={page.featuredImage.node.sourceUrl}
                 alt={page.title}
@@ -62,7 +66,7 @@ export default async function StaticPage({ params }: { params: Promise<{ slug: s
           )}
         </header>
 
-        <section className={`relative z-10 max-w-3xl mx-auto ${acf?.hero_full_width ? 'px-6' : ''}`}>
+        <section className={`relative z-10 max-w-3xl mx-auto ${scf?.hero_full_width ? 'px-6' : ''}`}>
           <div 
             className="prose prose-xl prose-invert font-sans leading-relaxed"
             dangerouslySetInnerHTML={{ __html: page.content }}
@@ -86,7 +90,7 @@ export default async function StaticPage({ params }: { params: Promise<{ slug: s
       </main>
 
       <footer className="border-t border-zinc-900 py-12 px-6 text-center text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-600">
-        System Node #{acf?.system_id || page.id.slice(0,8)} / Established 2024
+        System Node #{scf?.system_id || page.id.slice(0,8)} / Established 2024
       </footer>
     </div>
   );

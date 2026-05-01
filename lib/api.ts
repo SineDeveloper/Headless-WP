@@ -45,6 +45,26 @@ export async function fetchAPI(query: string, variables = {}) {
   } catch (error: any) {
     const is404 = error.response?.status === 404;
     const isTimeout = error.message?.includes('timeout') || error.response?.status === 504;
+    const isSCFMissing = error.message?.includes('Cannot query field "scf"') || error.message?.includes('Cannot query field "acf"');
+
+    if (isSCFMissing) {
+      console.warn('SCHEMA WARNING: Smart Custom Fields (SCF) is either not installed or not exposed to GraphQL.');
+      console.info('FALLBACK: Attempting to recover by stripping custom fields from the query...');
+      
+      // Attempt fallback: RE-TRY without custom fields to keep the app functional
+      try {
+        const fallingBackQuery = query.replace(/(scf|acf)\s*{[\s\S]*?}/g, '');
+        const fallbackData = await apiClient.request(fallingBackQuery, variables);
+        // Mark the data so the UI can detect it if needed
+        if (fallbackData) {
+          (fallbackData as any)._scf_missing = true;
+          console.info('RECOVERY SUCCESS: Core WordPress content retrieved successfully.');
+        }
+        return fallbackData;
+      } catch (fallbackError) {
+        console.error('RECOVERY FAILED: Could not retrieve even core WordPress content:', (fallbackError as any).message);
+      }
+    }
 
     if (is404) {
       console.error('CRITICAL: WordPress GraphQL Endpoint returned 404.');
@@ -136,6 +156,12 @@ export async function getHomePage() {
             sourceUrl
           }
         }
+        scf {
+          subtitle
+          hero_full_width
+          system_id
+          accent_color
+        }
       }
     }
   `;
@@ -156,6 +182,12 @@ export async function getPageBySlug(slug: string) {
           node {
             sourceUrl
           }
+        }
+        scf {
+          subtitle
+          hero_full_width
+          system_id
+          accent_color
         }
       }
     }

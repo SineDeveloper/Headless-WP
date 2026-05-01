@@ -6,7 +6,7 @@ import { Terminal, Sparkles } from 'lucide-react';
 
 export default async function Home() {
   const posts = await getAllPosts();
-  const homePage = await getHomePage();
+  const homePage: any = await getHomePage();
 
   // If homePage is null and no posts are found, likely a 404/Connection issue
   if (!homePage && (!posts || posts.length === 0)) {
@@ -18,32 +18,37 @@ export default async function Home() {
     );
   }
 
-  const acf = homePage?.acf;
-  const accentColor = acf?.accent_color || '#6366f1';
+  // Handle case where query worked but SCF fields were stripped (fallback mode)
+  if (homePage?._scf_missing) {
+    console.warn('UI WARNING: Smart Custom Fields (SCF) metadata is missing from the schema. Page is rendering with default styles.');
+  }
+
+  const scf = homePage?.scf;
+  const accentColor = scf?.accent_color || '#6366f1';
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100" style={{ '--accent': accentColor } as any}>
       <Navbar />
       
-      <main className={`relative py-20 ${acf?.hero_full_width ? '' : 'max-w-7xl mx-auto px-6'}`}>
+      <main className={`relative py-20 ${scf?.hero_full_width ? '' : 'max-w-7xl mx-auto px-6'}`}>
         <div 
           className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] blur-[120px] rounded-full pointer-events-none opacity-10"
           style={{ backgroundColor: 'var(--accent)' }}
         />
 
-        <header className={`mb-24 relative z-10 ${acf?.hero_full_width ? 'max-w-7xl mx-auto px-6' : ''}`}>
+        <header className={`mb-24 relative z-10 ${scf?.hero_full_width ? 'max-w-7xl mx-auto px-6' : ''}`}>
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12">
             <div className="max-w-4xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full mb-8">
                 <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'var(--accent)' }} />
                 <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
-                  {acf?.system_id ? `Active Node: ${acf.system_id}` : 'System v4.2 Active'}
+                  {scf?.system_id ? `Active Node: ${scf.system_id}` : 'System v4.2 Active'}
                 </span>
               </div>
 
-              {acf?.subtitle && (
+              {scf?.subtitle && (
                 <div className="font-mono text-[11px] uppercase tracking-[0.5em] text-zinc-500 mb-4">
-                  {acf.subtitle}
+                  {scf.subtitle}
                 </div>
               )}
 
@@ -81,7 +86,7 @@ export default async function Home() {
           </div>
         </header>
 
-        <section className={`mt-32 ${acf?.hero_full_width ? 'max-w-7xl mx-auto px-6' : ''}`}>
+        <section className={`mt-32 ${scf?.hero_full_width ? 'max-w-7xl mx-auto px-6' : ''}`}>
           <div className="flex items-center gap-4 mb-16">
             <div className="h-[1px] flex-grow bg-zinc-800" />
             <h2 className="font-mono text-[11px] uppercase tracking-[0.4em] text-zinc-500 font-bold whitespace-nowrap">Latest Journal Entries</h2>
@@ -117,9 +122,9 @@ export default async function Home() {
             <p className="text-zinc-500 text-sm max-w-xs leading-relaxed">
               Crafting high-performance digital experiences through headless architecture and distributed data layers.
             </p>
-            {acf?.system_id && (
+            {scf?.system_id && (
               <div className="mt-6 font-mono text-[9px] uppercase tracking-widest text-zinc-700">
-                System Interface Node: {acf.system_id}
+                System Interface Node: {scf.system_id}
               </div>
             )}
           </div>
