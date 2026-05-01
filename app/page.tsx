@@ -1,26 +1,52 @@
 import { getAllPosts, getHomePage } from '@/lib/api';
 import Navbar from '@/components/navbar';
 import PostCard from '@/components/post-card';
+import BridgeStatus from '@/components/bridge-status';
 import { Terminal, Sparkles } from 'lucide-react';
 
 export default async function Home() {
   const posts = await getAllPosts();
   const homePage = await getHomePage();
 
+  // If homePage is null and no posts are found, likely a 404/Connection issue
+  if (!homePage && (!posts || posts.length === 0)) {
+    return (
+      <div className="min-h-screen bg-zinc-950 text-zinc-100">
+        <Navbar />
+        <BridgeStatus type="404" />
+      </div>
+    );
+  }
+
+  const acf = homePage?.acf;
+  const accentColor = acf?.accent_color || '#6366f1';
+
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100" style={{ '--accent': accentColor } as any}>
       <Navbar />
       
-      <main className="relative max-w-7xl mx-auto px-6 py-20">
-        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
+      <main className={`relative py-20 ${acf?.hero_full_width ? '' : 'max-w-7xl mx-auto px-6'}`}>
+        <div 
+          className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] blur-[120px] rounded-full pointer-events-none opacity-10"
+          style={{ backgroundColor: 'var(--accent)' }}
+        />
 
-        <header className="mb-24 relative z-10">
+        <header className={`mb-24 relative z-10 ${acf?.hero_full_width ? 'max-w-7xl mx-auto px-6' : ''}`}>
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12">
             <div className="max-w-4xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full mb-8">
-                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-400">System v4.2 Active</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full mb-8">
+                <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'var(--accent)' }} />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                  {acf?.system_id ? `Active Node: ${acf.system_id}` : 'System v4.2 Active'}
+                </span>
               </div>
+
+              {acf?.subtitle && (
+                <div className="font-mono text-[11px] uppercase tracking-[0.5em] text-zinc-500 mb-4">
+                  {acf.subtitle}
+                </div>
+              )}
+
               <h1 className="font-serif italic text-6xl md:text-8xl lg:text-9xl leading-[0.8] tracking-tight text-white mb-8">
                 {homePage?.title || "Headless"}<br />
                 <span className="text-zinc-700">{homePage?.title ? "Interface" : "Development"}</span>
@@ -55,7 +81,7 @@ export default async function Home() {
           </div>
         </header>
 
-        <section className="mt-32">
+        <section className={`mt-32 ${acf?.hero_full_width ? 'max-w-7xl mx-auto px-6' : ''}`}>
           <div className="flex items-center gap-4 mb-16">
             <div className="h-[1px] flex-grow bg-zinc-800" />
             <h2 className="font-mono text-[11px] uppercase tracking-[0.4em] text-zinc-500 font-bold whitespace-nowrap">Latest Journal Entries</h2>
@@ -83,7 +109,7 @@ export default async function Home() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-6 h-6 bg-indigo-600 rounded flex items-center justify-center">
+              <div className="w-6 h-6 rounded flex items-center justify-center" style={{ backgroundColor: 'var(--accent)' }}>
                 <Terminal className="w-4 h-4 text-white" />
               </div>
               <span className="font-bold text-zinc-100">HeadlessWP</span>
@@ -91,6 +117,11 @@ export default async function Home() {
             <p className="text-zinc-500 text-sm max-w-xs leading-relaxed">
               Crafting high-performance digital experiences through headless architecture and distributed data layers.
             </p>
+            {acf?.system_id && (
+              <div className="mt-6 font-mono text-[9px] uppercase tracking-widest text-zinc-700">
+                System Interface Node: {acf.system_id}
+              </div>
+            )}
           </div>
           <div>
             <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-6">Resources</h4>
