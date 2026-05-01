@@ -104,3 +104,24 @@ export async function getPostBySlug(slug: string) {
   const data: any = await fetchAPI(query, { id: slug, idType: 'SLUG' });
   return data?.post;
 }
+
+export async function getPageBySlug(slug: string) {
+  const query = gql`
+    query PageBySlug($id: ID!, $idType: PageIdType!) {
+      page(id: $id, idType: $idType) {
+        id
+        title
+        content
+        slug
+        featuredImage {
+          node {
+            sourceUrl
+          }
+        }
+      }
+    }
+  `;
+
+  const data: any = await fetchAPI(query, { id: slug, idType: 'SLUG' });
+  return data?.page;
+}
