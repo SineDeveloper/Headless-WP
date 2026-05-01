@@ -1,0 +1,44 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
+  
+  --color-zinc-950: #09090b;
+  --color-zinc-925: #0f0f12;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-zinc-950 text-zinc-100;
+  }
+}
+
+@layer components {
+  .prose {
+    @apply text-zinc-400;
+  }
+  .prose h1, .prose h2, .prose h3 {
+    @apply text-zinc-100 mb-4 mt-8 font-serif italic font-normal tracking-tight;
+  }
+  .prose p {
+    @apply mb-6 leading-relaxed;
+  }
+  .prose a {
+    @apply text-indigo-400 underline decoration-indigo-400/20 hover:decoration-indigo-400 transition-all;
+  }
+  .prose img {
+    @apply border border-zinc-800 rounded-lg my-12;
+  }
+  .prose blockquote {
+    @apply border-l-2 border-indigo-500 pl-8 italic font-serif text-2xl lg:text-3xl text-zinc-200 my-12;
+  }
+  .prose strong {
+    @apply text-zinc-100 font-semibold;
+  }
+  .prose code {
+    @apply bg-zinc-900 text-indigo-300 px-1.5 py-0.5 rounded text-sm;
+  }
+}

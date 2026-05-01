@@ -1,0 +1,6 @@
+{
+  "name": "Headless WP Frontend",
+  "description": "A luxury-styled headless WordPress frontend built with Next.js 15, Tailwind CSS, and WPGraphQL.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
