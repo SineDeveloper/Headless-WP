@@ -45,19 +45,19 @@ export async function fetchAPI(query: string, variables = {}) {
   } catch (error: any) {
     const is404 = error.response?.status === 404;
     const isTimeout = error.message?.includes('timeout') || error.response?.status === 504;
-    const isSCFMissing = error.message?.includes('Cannot query field "scf"') || error.message?.includes('Cannot query field "acf"');
+    const isCustomFieldMissing = error.message?.includes('Cannot query field "acf"') || error.message?.includes('Cannot query field "scf"');
 
-    if (isSCFMissing) {
-      console.warn('SCHEMA WARNING: Smart Custom Fields (SCF) is either not installed or not exposed to GraphQL.');
+    if (isCustomFieldMissing) {
+      console.warn('SCHEMA WARNING: Custom fields (ACF/SCF) are missing from the GraphQL schema.');
       console.info('FALLBACK: Attempting to recover by stripping custom fields from the query...');
       
       // Attempt fallback: RE-TRY without custom fields to keep the app functional
       try {
-        const fallingBackQuery = query.replace(/(scf|acf)\s*{[\s\S]*?}/g, '');
+        const fallingBackQuery = query.replace(/(acf|scf)\s*{[\s\S]*?}/g, '');
         const fallbackData = await apiClient.request(fallingBackQuery, variables);
         // Mark the data so the UI can detect it if needed
         if (fallbackData) {
-          (fallbackData as any)._scf_missing = true;
+          (fallbackData as any)._metadata_missing = true;
           console.info('RECOVERY SUCCESS: Core WordPress content retrieved successfully.');
         }
         return fallbackData;
@@ -156,7 +156,7 @@ export async function getHomePage() {
             sourceUrl
           }
         }
-        scf {
+        acf {
           subtitle
           hero_full_width
           system_id
@@ -183,7 +183,7 @@ export async function getPageBySlug(slug: string) {
             sourceUrl
           }
         }
-        scf {
+        acf {
           subtitle
           hero_full_width
           system_id
