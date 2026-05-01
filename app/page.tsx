@@ -1,33 +1,41 @@
-import { getAllPosts } from '@/lib/api';
+import { getAllPosts, getHomePage } from '@/lib/api';
 import Navbar from '@/components/navbar';
 import PostCard from '@/components/post-card';
-import { Terminal } from 'lucide-react';
+import { Terminal, Sparkles } from 'lucide-react';
 
 export default async function Home() {
   const posts = await getAllPosts();
+  const homePage = await getHomePage();
 
   return (
     <div className="min-h-screen bg-zinc-950">
       <Navbar />
       
       <main className="relative max-w-7xl mx-auto px-6 py-20">
-        {/* Decorative background flare */}
         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
 
         <header className="mb-24 relative z-10">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12">
-            <div className="max-w-3xl">
+            <div className="max-w-4xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full mb-8">
                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
                 <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-400">System v4.2 Active</span>
               </div>
               <h1 className="font-serif italic text-6xl md:text-8xl lg:text-9xl leading-[0.8] tracking-tight text-white mb-8">
-                Headless<br />
-                <span className="text-zinc-700">Interface</span>
+                {homePage?.title || "Headless"}<br />
+                <span className="text-zinc-700">{homePage?.title ? "Interface" : "Development"}</span>
               </h1>
-              <p className="font-sans text-xl text-zinc-400 leading-relaxed max-w-xl">
-                A high-performance blog architecture bridging the gap between WordPress core and modern reactive frontend logic.
-              </p>
+              
+              {homePage?.content ? (
+                <div 
+                  className="prose prose-invert prose-xl font-sans text-zinc-400 leading-relaxed max-w-2xl mt-12 mb-12"
+                  dangerouslySetInnerHTML={{ __html: homePage.content }}
+                />
+              ) : (
+                <p className="font-sans text-xl text-zinc-400 leading-relaxed max-w-xl mt-8">
+                  A high-performance blog architecture bridging the gap between WordPress core and modern reactive frontend logic.
+                </p>
+              )}
             </div>
             
             <div className="flex flex-col gap-4 min-w-[240px]">
@@ -47,20 +55,28 @@ export default async function Home() {
           </div>
         </header>
 
-        {posts && posts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
-            {posts.map((post: any) => (
-              <PostCard key={post.id} post={post} />
-            ))}
+        <section className="mt-32">
+          <div className="flex items-center gap-4 mb-16">
+            <div className="h-[1px] flex-grow bg-zinc-800" />
+            <h2 className="font-mono text-[11px] uppercase tracking-[0.4em] text-zinc-500 font-bold whitespace-nowrap">Latest Journal Entries</h2>
+            <div className="h-[1px] flex-grow bg-zinc-800" />
           </div>
-        ) : (
-          <div className="py-40 text-center border border-dashed border-zinc-800 rounded-3xl">
-            <p className="font-serif italic text-3xl text-zinc-600">Buffer empty.</p>
-            <p className="font-mono text-[10px] uppercase tracking-widest mt-4 text-zinc-500">
-              Querying endpoint at {process.env.NEXT_PUBLIC_WORDPRESS_API_URL}
-            </p>
-          </div>
-        )}
+
+          {posts && posts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
+              {posts.map((post: any) => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </div>
+          ) : (
+            <div className="py-40 text-center border border-dashed border-zinc-800 rounded-3xl">
+              <p className="font-serif italic text-3xl text-zinc-600">Buffer empty.</p>
+              <p className="font-mono text-[10px] uppercase tracking-widest mt-4 text-zinc-500">
+                Ensure your posts are public and GraphQL endpoint is correct.
+              </p>
+            </div>
+          )}
+        </section>
       </main>
 
       <footer className="border-t border-zinc-900 bg-zinc-925 py-20 px-6 mt-20">

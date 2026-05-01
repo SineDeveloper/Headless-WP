@@ -21,9 +21,9 @@ export default function Navbar() {
           <div className="flex items-center gap-4 px-4 py-1.5 bg-zinc-900 border border-zinc-800 rounded-full">
             <Link href="/" className="text-[11px] font-bold uppercase tracking-wider text-zinc-100 hover:text-indigo-400 transition-colors">Stories</Link>
             <div className="w-1 h-1 rounded-full bg-zinc-700" />
-            <Link href="#" className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 hover:text-zinc-300 transition-colors">Docs</Link>
+            <Link href="/about" className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 hover:text-zinc-300 transition-colors">About</Link>
             <div className="w-1 h-1 rounded-full bg-zinc-700" />
-            <Link href="#" className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 hover:text-zinc-300 transition-colors">API</Link>
+            <Link href="/contact" className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 hover:text-zinc-300 transition-colors">Contact</Link>
           </div>
           
           <button className="bg-zinc-100 text-zinc-950 px-4 py-1.5 text-xs font-bold rounded-md hover:bg-white transition-all shadow-sm">

@@ -37,8 +37,8 @@ export async function fetchAPI(query: string, variables = {}) {
   try {
     const data = await apiClient.request(query, variables);
     return data;
-  } catch (error) {
-    console.error('Error fetching from WordPress API:', error);
+  } catch (error: any) {
+    console.error('Error fetching from WordPress API:', error.message || error);
     return null;
   }
 }
@@ -105,6 +105,26 @@ export async function getPostBySlug(slug: string) {
   return data?.post;
 }
 
+export async function getHomePage() {
+  const query = gql`
+    query HomePage {
+      page(id: "/", idType: URI) {
+        id
+        title
+        content
+        featuredImage {
+          node {
+            sourceUrl
+          }
+        }
+      }
+    }
+  `;
+
+  const data: any = await fetchAPI(query);
+  return data?.page;
+}
+
 export async function getPageBySlug(slug: string) {
   const query = gql`
     query PageBySlug($id: ID!, $idType: PageIdType!) {
@@ -122,6 +142,8 @@ export async function getPageBySlug(slug: string) {
     }
   `;
 
-  const data: any = await fetchAPI(query, { id: slug, idType: 'SLUG' });
+  // Ensure URI starts with a slash
+  const uri = slug.startsWith('/') ? slug : `/${slug}`;
+  const data: any = await fetchAPI(query, { id: uri, idType: 'URI' });
   return data?.page;
 }
