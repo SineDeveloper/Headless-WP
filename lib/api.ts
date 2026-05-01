@@ -136,12 +136,6 @@ export async function getHomePage() {
             sourceUrl
           }
         }
-        acf {
-          subtitle
-          hero_full_width
-          system_id
-          accent_color
-        }
       }
     }
   `;
@@ -162,12 +156,6 @@ export async function getPageBySlug(slug: string) {
           node {
             sourceUrl
           }
-        }
-        acf {
-          subtitle
-          hero_full_width
-          system_id
-          accent_color
         }
       }
     }
